@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>虛構成績表顯示與下載</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>虛構成績表</h2>
+    <table id="gradesTable">
+        <thead>
+            <tr>
+                <th>序號</th>
+                <th>班級</th>
+                <th>學號</th>
+                <th>姓名</th>
+                <th>GitHub 帳號</th>
+                <th>作業一</th>
+                <th>作業二</th>
+                <th>作業三</th>
+                <th>作業四</th>
+                <th>作業五</th>
+                <th>作業六</th>
+                <th>作業七</th>
+                <th>作業八</th>
+                <th>作業九</th>
+                <th>作業十</th>
+            </tr>
+        </thead>
+        <tbody id="gradesTableBody">
+            <!-- 成績資料將插入這裡 -->
+        </tbody>
+    </table>
+    
+    <button onclick="downloadCSV(csvContent, 'DummyGrades.csv')">Download CSV</button>
+
+<script>
+// 假設以下代碼在 ESLint 的規則下寫成
+function getRandomChineseCharacter() {
+    // 這裡選擇的範圍是基本漢字和擴展A區的部分範圍，您可以根據需要調整
+    const ranges = [
+        [0x4E00, 0x9FFF], // 基本漢字
+        [0x3400, 0x4DBF], // 擴展A
+        // 您可以添加更多的範圍來增加字符的多樣性
+    ];
+
+    const range = ranges[Math.floor(Math.random() * ranges.length)];
+    const codePoint = Math.floor(Math.random() * (range[1] - range[0])) + range[0];
+    return String.fromCodePoint(codePoint);
+}
+
+function getRandomName() {
+    // 生成三個漢字組成的姓名
+    return getRandomChineseCharacter() + getRandomChineseCharacter() + getRandomChineseCharacter();
+}
+
+function generateRandomData() {
+    const departments = ['資工系', '資工所', '電資AI', '電資資安', '創新AI'];
+    const middleIds = ['590', '598', 'C52', 'C53', 'C71'];
+    let students = [];
+
+    for (let i = 0; i < 120; i++) {
+        let department = departments[Math.floor(Math.random() * departments.length)];
+        let studentId = `11${middleIds[Math.floor(Math.random() * middleIds.length)]}${String(Math.floor(Math.random() * 999)).padStart(3, '0')}`;
+        let gitHubId = Math.random().toString(36).substr(2, 10);
+        let name = getRandomName(); // 新增姓名
+        let grades = Array.from({ length: 10 }, () => Math.floor(Math.random() * 11));
+
+        students.push({ department, studentId, name, gitHubId, grades });
+    }
+
+    return students;
+}
+
+function convertToCSV(data) {
+    const headers = ['序號', '班級', '學號', '姓名', 'GitHub 帳號', ...Array.from({ length: 10 }, (_, i) => `作業${i + 1}`)];
+    const rows = data.map((student, index) =>
+        [index + 1, student.department, student.studentId, student.name, student.gitHubId, ...student.grades].join(',')
+    );
+
+    return [headers.join(','), ...rows].join('\r\n');
+}
+
+// 將成績資料顯示在表格中
+function displayGradesTable(data) {
+    const tableBody = document.getElementById('gradesTableBody');
+    let tableRows = data.map((student, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${student.department}</td>
+            <td>${student.studentId}</td>
+            <td>${student.name}</td> <!-- 顯示姓名 -->
+            <td>${student.gitHubId}</td>
+            ${student.grades.map(grade => `<td>${grade}</td>`).join('')}
+        </tr>
+    `).join('');
+    tableBody.innerHTML = tableRows;
+}
+
+function downloadCSV(csvData, fileName) {
+  const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+let csvContent; // 用於存儲生成的 CSV 內容
+
+// 當文檔載入完成時，生成並顯示成績表
+document.addEventListener('DOMContentLoaded', function() {
+    const studentsData = generateRandomData();
+    csvContent = convertToCSV(studentsData);
+    displayGradesTable(studentsData);
+});
+
+</script>
+
+</body>
+</html>
