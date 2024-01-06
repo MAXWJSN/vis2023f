@@ -1,0 +1,14 @@
+{
+  "name": "ce5e116ca8210b37",
+  "main": "ce5e116ca8210b37@32.js",
+  "version": "32.0.0",
+  "homepage": "https://observablehq.com/d/ce5e116ca8210b37",
+  "author": {
+    "name": "北科大-陳冠瑋's Workspace",
+    "url": "https://observablehq.com/@bei-ke-da-chen-guan-wei-ws"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}
